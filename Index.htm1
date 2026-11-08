@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WORK TRACKER</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f5f8;
+  color: #182333;
+}
+header {
+  background: #142b46;
+  color: white;
+  padding: 28px 22px;
+}
+header h1 { margin: 0; font-size: 25px; }
+header p { color: #c4d1df; margin-bottom: 0; }
+main {
+  max-width: 500px;
+  margin: 25px auto;
+  padding: 0 18px;
+}
+.card {
+  background: white;
+  border-radius: 18px;
+  padding: 23px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 16px #172b4410;
+}
+.label { font-size: 13px; color: #697789; }
+select {
+  width: 100%;
+  padding: 15px;
+  margin-top: 10px;
+  border: 1px solid #dce2e9;
+  border-radius: 10px;
+  font-size: 16px;
+  background: white;
+}
+.clock {
+  text-align: center;
+  font-size: 43px;
+  font-weight: bold;
+  margin: 22px 0 5px;
+}
+.status {
+  text-align: center;
+  color: #788596;
+  margin-bottom: 25px;
+}
+button {
+  width: 100%;
+  border: 0;
+  padding: 17px;
+  border-radius: 11px;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 10px;
+  cursor: pointer;
+}
+.start { background: #168653; color: white; }
+.end { background: #d94b4b; color: white; }
+button:disabled { opacity: .35; }
+.summary {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #edf0f4;
+}
+footer {
+  text-align: center;
+  color: #8490a0;
+  padding: 20px;
+  font-size: 12px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>WORK TRACKER</h1>
+  <p>Employee attendance system</p>
+</header>
+
+<main>
+  <section class="card">
+    <div class="label">WORK LOCATION</div>
+    <select id="site">
+      <option value="Utrecht">Utrecht</option>
+      <option value="Breda">Breda</option>
+      <option value="Rotterdam">Rotterdam</option>
+    </select>
+  </section>
+
+  <section class="card">
+    <div class="label">CURRENT TIME</div>
+    <div class="clock" id="clock">00:00:00</div>
+    <div class="status" id="status">Not working</div>
+
+    <button class="start" id="start">START WORK</button>
+    <button class="end" id="end" disabled>END WORK</button>
+  </section>
+
+  <section class="card">
+    <h3>Today's shift</h3>
+    <div class="summary">
+      <span>Work site</span>
+      <strong id="location">—</strong>
+    </div>
+    <div class="summary">
+      <span>Start time</span>
+      <strong id="started">—</strong>
+    </div>
+    <div class="summary">
+      <span>End time</span>
+      <strong id="finished">—</strong>
+    </div>
+    <div class="summary">
+      <span>Total hours</span>
+      <strong id="hours">0.00 h</strong>
+    </div>
+  </section>
+</main>
+
+<footer>WORK TRACKER © 2026</footer>
+
+<script>
+let startTime = null;
+let timer = null;
+
+function updateClock() {
+  document.getElementById("clock").textContent =
+    new Date().toLocaleTimeString("en-GB");
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+document.getElementById("start").onclick = function() {
+  if (startTime) return;
+
+  startTime = new Date();
+  document.getElementById("location").textContent =
+    document.getElementById("site").value;
+  document.getElementById("started").textContent =
+    startTime.toLocaleTimeString("en-GB");
+  document.getElementById("status").textContent = "Working";
+  document.getElementById("start").disabled = true;
+  document.getElementById("end").disabled = false;
+  document.getElementById("site").disabled = true;
+
+  timer = setInterval(updateHours, 1000);
+};
+
+function updateHours() {
+  if (!startTime) return;
+  const seconds = (new Date() - startTime) / 1000;
+  document.getElementById("hours").textContent =
+    (seconds / 3600).toFixed(2) + " h";
+}
+
+document.getElementById("end").onclick = function() {
+  if (!startTime) return;
+
+  const endTime = new Date();
+  document.getElementById("finished").textContent =
+    endTime.toLocaleTimeString("en-GB");
+
+  updateHours();
+  clearInterval(timer);
+  startTime = null;
+
+  document.getElementById("status").textContent = "Shift completed";
+  document.getElementById("end").disabled = true;
+  document.getElementById("start").disabled = false;
+  document.getElementById("site").disabled = false;
+};
+</script>
+
+</body>
+</html>
